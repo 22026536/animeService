@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from 'dotenv';
 import express, { json } from 'express';
 import mongoose from 'mongoose';
-import routerAnime from './routes/animeRouter';
+import routerAnime from './src/routes/animeRouter';
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(json());
 app.set('trust proxy', 1);
 app.use(cookieParser());
-app.use('/api/anime', routerAnime);
+app.use('/anime', routerAnime);
 
 // Kết nối MongoDB
 mongoose.connect(MONGO_URI, {
