@@ -220,3 +220,63 @@ export const searchAnimeByName = async (req, res) => {
         });
     }
 };
+
+export const getUserRatedAnime = async (req, res) => {
+    try {
+        const token = req.body.jwt;
+
+        if (!token) {
+            return res.status(401).json({
+                message: "Người dùng chưa đăng nhập",
+                success: false
+            });
+        }
+
+        if (isTokenExpired(token)) {
+            return res.status(401).json({
+                message: "Phiên đăng nhập đã hết hạn",
+                success: false
+            });
+        }
+
+        // Giải mã token để lấy user_id
+        const decoded = verifyToken(token);
+        const user_id = decoded.id;
+
+        // Lấy danh sách anime_id và rating từ UserRating
+        const userRatings = await UserRating.find({ User_id: user_id });
+
+        if (userRatings.length === 0) {
+            return res.status(404).json({
+                message: "Người dùng chưa rate anime nào",
+                success: true,
+                anime: []
+            });
+        }
+
+        // Lấy danh sách anime_id từ UserRating
+        const ratedAnimeIds = userRatings.map(rating => rating.Anime_id);
+
+        // Lấy thông tin chi tiết của các anime đã rate từ bảng Anime
+        const ratedAnimes = await Anime.find({ Anime_id: { $in: ratedAnimeIds } });
+
+        // Kết hợp thông tin rating với anime
+        const result = ratedAnimes.map(anime => {
+            const rating = userRatings.find(r => r.Anime_id === anime.Anime_id);
+            return {
+                ...anime._doc,
+                user_rating: rating ? rating.Rating : null
+            };
+        });
+
+        return res.status(200).json(
+            result
+        );
+    } catch (error) {
+        console.error("Error fetching rated anime:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false
+        });
+    }
+};
