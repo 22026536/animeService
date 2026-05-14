@@ -5,8 +5,8 @@ import {
 import dotenv from "dotenv";
 // import filmInfoForAI from "../../middlewares/user/filmInfoForAI.js";
 dotenv.config();
-const k_f = `AIzaSyDvXUA7HTUrYT`
-const k_s = `fRl78PKnySSXQhm_sMZUg`
+const k_f = `AIzaSyCJuCwq054q`
+const k_s = `2BlpT3xveqh8MBQ7lyitUiE`
 const k = k_f+k_s;
 const genAI = new GoogleGenerativeAI(k);
 // const filmInfo = filmInfoForAI()
